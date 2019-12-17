@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AuctionsService } from 'src/app/services/auctions.service';
+import { Auction } from 'src/app/models/auction';
+import { Operation } from 'src/app/models/operation';
 
 @Component({
   selector: 'app-home',
@@ -8,6 +10,10 @@ import { AuctionsService } from 'src/app/services/auctions.service';
   providers: [AuctionsService]
 })
 export class HomePage implements OnInit {
+
+  auctions: Auction[] = [];
+
+  operations: Operation[] = [];
 
   constructor(
     private auctionService: AuctionsService
@@ -20,8 +26,21 @@ export class HomePage implements OnInit {
     console.log(token);
 
     this.auctionService.getAuctions(token).subscribe(
-      (data) => {
+      (data: any) => {
         console.log(data);
+        data.results.filter(d => {
+          this.auctions.push(d);
+          this.auctionService.getOperation(token, d.operation).subscribe(
+            (op) => {
+              this.operations.push(op);
+            },
+            (error) => {
+              console.log(error);
+            }
+          );
+        });
+        console.log(this.auctions);
+        console.log(this.operations);
       },
       (error) => {
         console.log(error);
