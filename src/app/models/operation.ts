@@ -3,4 +3,5 @@ export class Operation {
     amount: number;
     cost_time_priority: number;
     payment_date: string;
+    id: string;
 }

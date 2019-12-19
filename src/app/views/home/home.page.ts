@@ -23,24 +23,27 @@ export class HomePage implements OnInit {
     let token: string;
     const data = JSON.parse(sessionStorage.getItem('userAuth'));
     token = data.token;
-    console.log(token);
 
     this.auctionService.getAuctions(token).subscribe(
       (data: any) => {
-        console.log(data);
-        data.results.filter(d => {
-          this.auctions.push(d);
+        this.auctions = data.results;
+        this.auctions.map(d => {
           this.auctionService.getOperation(token, d.operation).subscribe(
-            (op) => {
+            (op: Operation) => {
+              if (d.operation === op.id) {
+                d.amount = op.amount;
+                d.cost_time_priority = op.cost_time_priority
+                d.debtor_entity_name = op.debtor_entity_name;
+                d.payment_date = op.payment_date;
+              }
               this.operations.push(op);
             },
             (error) => {
               console.log(error);
             }
           );
+          return d;
         });
-        console.log(this.auctions);
-        console.log(this.operations);
       },
       (error) => {
         console.log(error);
